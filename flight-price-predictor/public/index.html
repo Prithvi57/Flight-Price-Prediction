@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fare Forecast — flight price prediction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="sky" aria-hidden="true"></div>
+
+<header class="site-head">
+  <div class="brand">
+    <span class="brand-mark">✈</span>
+    <span class="brand-name">Fare&nbsp;Forecast</span>
+  </div>
+  <span class="eyebrow">Live board · updated from historical fares</span>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow">Fare prediction</p>
+    <h1>Know the price<br>before the board does.</h1>
+    <p class="hero-sub">Pick a route and a date. We fit a trend line over real historical fares for that route and read off where the price is headed.</p>
+  </section>
+
+  <section class="kiosk" aria-label="Search flight price">
+    <form id="predict-form" class="kiosk-form">
+      <div class="kiosk-row route-row">
+        <div class="field">
+          <label for="origin">From</label>
+          <select id="origin" required></select>
+        </div>
+        <div class="swap-mark" aria-hidden="true">→</div>
+        <div class="field">
+          <label for="destination">To</label>
+          <select id="destination" required></select>
+        </div>
+      </div>
+
+      <div class="kiosk-row">
+        <div class="field">
+          <label for="travel-date">Departure date</label>
+          <input type="date" id="travel-date" required />
+        </div>
+        <div class="field">
+          <label for="travel-class">Class</label>
+          <select id="travel-class">
+            <option value="economy">Economy</option>
+            <option value="premium_economy">Premium Economy</option>
+            <option value="business">Business</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="airline">Airline</label>
+          <select id="airline">
+            <option value="">Any airline</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="predict-btn">
+        <span>Predict fare</span>
+      </button>
+      <p class="form-error" id="form-error" role="alert"></p>
+    </form>
+  </section>
+
+  <section class="board-wrap" id="board-wrap" hidden>
+    <div class="board" id="board">
+      <div class="board-row board-row--header">
+        <span id="board-route">—</span>
+        <span id="board-date">—</span>
+        <span class="board-tag" id="board-confidence">—</span>
+      </div>
+
+      <div class="board-row board-row--price">
+        <div class="flap-price" id="flap-price"></div>
+        <span class="currency-label">INR</span>
+      </div>
+
+      <div class="board-row board-row--range">
+        <span>Likely range</span>
+        <span id="board-range">—</span>
+      </div>
+
+      <div class="board-row board-row--meta">
+        <span id="board-sample">—</span>
+        <span id="board-lead">—</span>
+      </div>
+
+      <div class="board-row board-row--trend">
+        <span class="trend-label">90-day fare trend for this route</span>
+        <svg id="trend-svg" viewBox="0 0 300 60" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="empty-state" id="empty-state">
+    <p>Choose a route, a date, and hit <strong>Predict fare</strong> — the board above will fill in.</p>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <span>Predictions are estimates from historical fare trends, not a guarantee.</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

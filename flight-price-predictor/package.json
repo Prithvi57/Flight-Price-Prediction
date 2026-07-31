@@ -1,0 +1,16 @@
+{
+  "name": "flight-price-predictor",
+  "version": "1.0.0",
+  "description": "Flight price prediction app — Express + PostgreSQL backend, vanilla JS frontend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node db/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5"
+  }
+}
