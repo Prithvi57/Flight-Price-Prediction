@@ -1,113 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fare Forecast — flight price prediction</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fare Forecast — AI & Historical Flight Price Predictor</title>
+  <meta name="description" content="Predict domestic flight prices across India using historical fare regression and real-time database analytics." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="sky" aria-hidden="true"></div>
-
-<header class="site-head">
-  <div class="brand">
-    <span class="brand-mark">✈</span>
-    <span class="brand-name">Fare&nbsp;Forecast</span>
+  <!-- Dynamic ambient sky gradient background -->
+  <div class="sky-ambient" aria-hidden="true">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="grid-overlay"></div>
   </div>
-  <span class="eyebrow">Live board · updated from historical fares</span>
-</header>
 
-<main class="wrap">
-  <section class="hero">
-    <p class="eyebrow">Fare prediction</p>
-    <h1>Know the price<br>before the board does.</h1>
-    <p class="hero-sub">Pick a route and a date. We fit a trend line over real historical fares for that route and read off where the price is headed.</p>
-  </section>
-
-  <section class="kiosk" aria-label="Search flight price">
-    <form id="predict-form" class="kiosk-form">
-      <div class="kiosk-row route-row">
-        <div class="field">
-          <label for="origin">From</label>
-          <select id="origin" required></select>
-        </div>
-        <div class="swap-mark" aria-hidden="true">→</div>
-        <div class="field">
-          <label for="destination">To</label>
-          <select id="destination" required></select>
-        </div>
+  <header class="site-head">
+    <div class="brand">
+      <div class="brand-icon">
+        <span>✈</span>
       </div>
-
-      <div class="kiosk-row">
-        <div class="field">
-          <label for="travel-date">Departure date</label>
-          <input type="date" id="travel-date" required />
-        </div>
-        <div class="field">
-          <label for="travel-class">Class</label>
-          <select id="travel-class">
-            <option value="economy">Economy</option>
-            <option value="premium_economy">Premium Economy</option>
-            <option value="business">Business</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="airline">Airline</label>
-          <select id="airline">
-            <option value="">Any airline</option>
-          </select>
-        </div>
-      </div>
-
-      <button type="submit" class="predict-btn">
-        <span>Predict fare</span>
-      </button>
-      <p class="form-error" id="form-error" role="alert"></p>
-    </form>
-  </section>
-
-  <section class="board-wrap" id="board-wrap" hidden>
-    <div class="board" id="board">
-      <div class="board-row board-row--header">
-        <span id="board-route">—</span>
-        <span id="board-date">—</span>
-        <span class="board-tag" id="board-confidence">—</span>
-      </div>
-
-      <div class="board-row board-row--price">
-        <div class="flap-price" id="flap-price"></div>
-        <span class="currency-label">INR</span>
-      </div>
-
-      <div class="board-row board-row--range">
-        <span>Likely range</span>
-        <span id="board-range">—</span>
-      </div>
-
-      <div class="board-row board-row--meta">
-        <span id="board-sample">—</span>
-        <span id="board-lead">—</span>
-      </div>
-
-      <div class="board-row board-row--trend">
-        <span class="trend-label">90-day fare trend for this route</span>
-        <svg id="trend-svg" viewBox="0 0 300 60" preserveAspectRatio="none"></svg>
+      <div class="brand-text">
+        <span class="brand-name">Fare Forecast</span>
+        <span class="brand-sub">Real-Time Historical Fare Engine</span>
       </div>
     </div>
-  </section>
 
-  <section class="empty-state" id="empty-state">
-    <p>Choose a route, a date, and hit <strong>Predict fare</strong> — the board above will fill in.</p>
-  </section>
-</main>
+    <!-- Live Database Connection Indicator -->
+    <div class="db-status-badge" id="db-status-badge" title="Live Database Connection Status">
+      <span class="status-indicator-dot" id="db-status-dot"></span>
+      <span class="status-text" id="db-status-text">Connecting to DB…</span>
+      <span class="status-count-pill" id="db-record-count" style="display: none;">0 records</span>
+    </div>
+  </header>
 
-<footer class="site-foot">
-  <span>Predictions are estimates from historical fare trends, not a guarantee.</span>
-</footer>
+  <main class="wrap">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="eyebrow-pill">
+        <span class="sparkle">✦</span>
+        <span>Linear Regression over Live Historical Fares</span>
+      </div>
+      <h1>Know the exact fare<br><span class="gradient-text">before booking your flight.</span></h1>
+      <p class="hero-sub">
+        Choose your route and departure date. Our database engine aggregates historical fare curves, adjusts for day-of-week seasonality, and forecasts the optimal booking price.
+      </p>
 
-<script src="app.js"></script>
+      <!-- Quick Route Suggestions -->
+      <div class="quick-routes" id="quick-routes">
+        <span class="quick-label">Popular routes:</span>
+        <button type="button" class="route-chip" data-origin="DEL" data-destination="BOM">Delhi → Mumbai</button>
+        <button type="button" class="route-chip" data-origin="BLR" data-destination="DEL">Bengaluru → Delhi</button>
+        <button type="button" class="route-chip" data-origin="BOM" data-destination="GOI">Mumbai → Goa</button>
+        <button type="button" class="route-chip" data-origin="CCU" data-destination="MAA">Kolkata → Chennai</button>
+      </div>
+    </section>
+
+    <!-- Prediction Kiosk Form -->
+    <section class="kiosk" aria-label="Flight Price Search">
+      <form id="predict-form" class="kiosk-form">
+        
+        <div class="kiosk-grid">
+          <!-- Origin -->
+          <div class="field-box">
+            <label for="origin">
+              <span class="field-label-icon">🛫</span>
+              <span>Origin City</span>
+            </label>
+            <div class="select-wrapper">
+              <select id="origin" required>
+                <option value="" disabled selected>Loading origin airports…</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Swap Button -->
+          <div class="swap-action">
+            <button type="button" id="swap-btn" class="swap-btn" title="Swap Origin & Destination" aria-label="Swap Origin and Destination">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Destination -->
+          <div class="field-box">
+            <label for="destination">
+              <span class="field-label-icon">🛬</span>
+              <span>Destination City</span>
+            </label>
+            <div class="select-wrapper">
+              <select id="destination" required>
+                <option value="" disabled selected>Loading destination airports…</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="kiosk-row secondary-row">
+          <!-- Departure Date -->
+          <div class="field-box date-field">
+            <label for="travel-date">
+              <span class="field-label-icon">📅</span>
+              <span>Departure Date</span>
+            </label>
+            <input type="date" id="travel-date" required />
+          </div>
+
+          <!-- Cabin Class -->
+          <div class="field-box">
+            <label for="travel-class">
+              <span class="field-label-icon">💺</span>
+              <span>Cabin Class</span>
+            </label>
+            <div class="select-wrapper">
+              <select id="travel-class">
+                <option value="economy" selected>Economy Class</option>
+                <option value="premium_economy">Premium Economy</option>
+                <option value="business">Business Class</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Preferred Airline -->
+          <div class="field-box">
+            <label for="airline">
+              <span class="field-label-icon">🏷️</span>
+              <span>Airline Filter</span>
+            </label>
+            <div class="select-wrapper">
+              <select id="airline">
+                <option value="">All Airlines (Market Avg)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-footer">
+          <button type="submit" class="predict-btn" id="submit-btn">
+            <span class="btn-icon">⚡</span>
+            <span class="btn-text">Predict Flight Fare</span>
+          </button>
+          <p class="form-error" id="form-error" role="alert"></p>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- Split-Flap Departure Board Results -->
+    <section class="board-wrap" id="board-wrap" hidden>
+      <div class="board" id="board">
+        
+        <!-- Header Strip -->
+        <div class="board-row board-row--header">
+          <div class="board-route-badge">
+            <span class="route-bullet">●</span>
+            <span id="board-route">—</span>
+          </div>
+          <div class="board-meta-badges">
+            <span class="board-tag date-tag" id="board-date">—</span>
+            <span class="board-tag confidence-tag" id="board-confidence">—</span>
+          </div>
+        </div>
+
+        <!-- Predicted Price Flap Display -->
+        <div class="board-row board-row--price">
+          <div class="price-callout">
+            <span class="callout-label">Estimated Fare</span>
+            <div class="flap-container">
+              <span class="currency-symbol">₹</span>
+              <div class="flap-price" id="flap-price"></div>
+            </div>
+          </div>
+
+          <div class="price-range-box">
+            <span class="range-title">Expected Fare Range</span>
+            <span class="range-val" id="board-range">—</span>
+            <div class="range-bar-track">
+              <div class="range-bar-fill" id="range-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meta statistics -->
+        <div class="board-row board-row--meta">
+          <div class="meta-item">
+            <span class="meta-icon">📊</span>
+            <span id="board-sample">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-icon">⏳</span>
+            <span id="board-lead">—</span>
+          </div>
+        </div>
+
+        <!-- 90-Day Trend Chart -->
+        <div class="board-row board-row--trend">
+          <div class="trend-header">
+            <span class="trend-label">90-Day Historical Booking Lead-Time Curve</span>
+            <span class="trend-sub">Average fare by days before departure</span>
+          </div>
+          <div class="trend-chart-container">
+            <svg id="trend-svg" viewBox="0 0 450 90" preserveAspectRatio="none"></svg>
+            <div class="trend-x-axis">
+              <span>90 days out (cheapest)</span>
+              <span>45 days out</span>
+              <span>Departure week (surge)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Empty / Initial Placeholder State -->
+    <section class="empty-state" id="empty-state">
+      <div class="empty-card">
+        <div class="empty-radar">
+          <div class="radar-sweep"></div>
+          <div class="radar-center">✈</div>
+        </div>
+        <h3>Ready for Fare Prediction</h3>
+        <p>Select your origin, destination, and departure date above or choose a popular route to forecast price trends directly from the database.</p>
+      </div>
+    </section>
+
+    <!-- Live Database & Architecture Info Card -->
+    <section class="db-inspector-card">
+      <div class="inspector-header">
+        <span class="inspector-title">Database & Prediction Model Architecture</span>
+        <span class="badge-engine" id="db-engine-badge">SQLite / PostgreSQL</span>
+      </div>
+      <div class="inspector-grid">
+        <div class="inspector-metric">
+          <span class="metric-label">Dataset Size</span>
+          <span class="metric-value" id="metric-dataset-count">16,200+</span>
+          <span class="metric-hint">Historical fares</span>
+        </div>
+        <div class="inspector-metric">
+          <span class="metric-label">Route Network</span>
+          <span class="metric-value" id="metric-airport-count">10 Cities</span>
+          <span class="metric-hint">90 direct pairs</span>
+        </div>
+        <div class="inspector-metric">
+          <span class="metric-label">Regression Engine</span>
+          <span class="metric-value">OLS Math</span>
+          <span class="metric-hint">Slope & Intercept</span>
+        </div>
+        <div class="inspector-metric">
+          <span class="metric-label">Seasonality Model</span>
+          <span class="metric-value">Day-of-Week</span>
+          <span class="metric-hint">Weekend multipliers</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-foot">
+    <div class="foot-wrap">
+      <span>Flight Price Predictor · Connected to live backend database</span>
+      <span class="foot-note">Predictions reflect historical mathematical regression and lead-time curves.</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
